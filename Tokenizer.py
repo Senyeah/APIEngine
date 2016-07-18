@@ -26,7 +26,7 @@ class EndpointToken(Enum):
 		* size is an optional
 	"""
 	
-	COMPONENT, SEPERATOR, VARIABLE, OPTIONAL = range(4)
+	COMPONENT, SEPARATOR, VARIABLE, OPTIONAL = range(4)
 
 class GenericTokenizer:
 	""" Performs tokenisation in the most generic sense, given a list of (token, regex)
@@ -197,12 +197,11 @@ class Tokenizer:
 			pair if that token has meaning encapsulated in a value.
 		"""
 		
-		
 		# Obtain the set of tokens after the first pass of the tokenizer
 		initial_tokens = BaseTokenizer(self.input_string, self.token_regex).all_tokens()
 		
 		# Then further parse endpoint strings, which come directly after either a HTTP method
-		# or a group definition
+		# or a group definition (not terribly efficient but you'll never notice)
 		
 		for index, (token, string_value_tuple) in enumerate(pairwise(initial_tokens)):
 			
