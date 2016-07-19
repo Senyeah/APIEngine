@@ -47,6 +47,7 @@ class TokenizationTests(unittest.TestCase):
 		
 		self.assertEqual(expected_tokens, actual_tokens)
 	
+	
 	def test_export_optional(self):
 		
 		definition_code = 'export GET "/users/[id]?/picture/[format]" to "UserImageRequest" in "file.php"'
@@ -59,7 +60,7 @@ class TokenizationTests(unittest.TestCase):
 			EndpointToken.SEPARATOR,
 			(EndpointToken.OPTIONAL, "id"),
 			EndpointToken.SEPARATOR,
-			(EndpointToken.COMPONENT, "picture").
+			(EndpointToken.COMPONENT, "picture"),
 			EndpointToken.SEPARATOR,
 			(EndpointToken.VARIABLE, "format"),
 			Token.TO,
