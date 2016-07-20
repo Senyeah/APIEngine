@@ -48,7 +48,7 @@ class TokenizationTests(unittest.TestCase):
 		self.assertEqual(expected_tokens, actual_tokens)
 	
 	
-	def test_export_optional(self):
+	def test_export_optional_variable(self):
 		
 		definition_code = 'export GET "/users/[id]?/picture/[format]" to "UserImageRequest" in "file.php"'
 		
@@ -72,8 +72,103 @@ class TokenizationTests(unittest.TestCase):
 		actual_tokens = Tokenizer.Tokenizer(definition_code).all_tokens()
 		
 		self.assertEqual(expected_tokens, actual_tokens)
-
 	
+	
+	def test_group_no_optional(self):
+		
+		# Have to be careful of the indentation here
+		
+		definition_code = """group "/users" base "/user_code"
+	export GET "/" to "UserGetRequest" in "user.php"
+	export POST "/" to "UserCreateRequest" in "user.php" """
+		
+		expected_tokens = [
+			Token.GROUP,
+			EndpointToken.SEPARATOR,
+			(EndpointToken.COMPONENT, "users"),
+			Token.BASE,
+			(Token.STRING, "/user_code"),
+			Token.INDENT,
+			Token.EXPORT,
+			Token.GET,
+			EndpointToken.SEPARATOR,
+			Token.TO,
+			(Token.STRING, "UserGetRequest"),
+			Token.IN,
+			(Token.STRING, "user.php"),
+			Token.INDENT,
+			Token.EXPORT,
+			Token.POST,
+			EndpointToken.SEPARATOR,
+			Token.TO,
+			(Token.STRING, "UserCreateRequest"),
+			Token.IN,
+			(Token.STRING, "user.php")
+		]
+		
+		actual_tokens = Tokenizer.Tokenizer(definition_code).all_tokens()
+				
+		self.assertEqual(expected_tokens, actual_tokens)
+	
+	
+	def test_group_variable(self):
+		
+		# Again be careful of the indentation
+		
+		definition_code = """group "/users/[id]" base "/user_code"
+	export GET "/" to "UserGetRequest" in "user.php" """
+	
+		expected_tokens = [
+			Token.GROUP,
+			EndpointToken.SEPARATOR,
+			(EndpointToken.COMPONENT, "users"),
+			EndpointToken.SEPARATOR,
+			(EndpointToken.VARIABLE, "id"),
+			Token.BASE,
+			(Token.STRING, "/user_code"),
+			Token.INDENT,
+			Token.EXPORT,
+			Token.GET,
+			EndpointToken.SEPARATOR,
+			Token.TO,
+			(Token.STRING, "UserGetRequest"),
+			Token.IN,
+			(Token.STRING, "user.php")
+		]
+
+		actual_tokens = Tokenizer.Tokenizer(definition_code).all_tokens()
+		
+		self.assertTrue(expected_tokens, actual_tokens)
+
+
+	def test_group_optional(self):
+		
+		# Again be careful of the indentation
+		
+		definition_code = """group "/users/[id]?" base "/user_code"
+	export GET "/" to "UserGetRequest" in "user.php" """
+	
+		expected_tokens = [
+			Token.GROUP,
+			EndpointToken.SEPARATOR,
+			(EndpointToken.COMPONENT, "users"),
+			EndpointToken.SEPARATOR,
+			(EndpointToken.OPTIONAL, "id"),
+			Token.BASE,
+			(Token.STRING, "/user_code"),
+			Token.INDENT,
+			Token.EXPORT,
+			Token.GET,
+			EndpointToken.SEPARATOR,
+			Token.TO,
+			(Token.STRING, "UserGetRequest"),
+			Token.IN,
+			(Token.STRING, "user.php")
+		]
+
+		actual_tokens = Tokenizer.Tokenizer(definition_code).all_tokens()
+		
+		self.assertTrue(expected_tokens, actual_tokens)
 
 if __name__ == '__main__':
 	unittest.main()
