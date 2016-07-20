@@ -19,6 +19,14 @@ APIEngine is licensed under the GNU General Public License, version 3.
 
 ## Getting Started
 
+### Preliminary
+
+Firstly, you’ll want to clone this repository locally—either by running `git clone https://github.com/Senyeah/APIEngine.git`, or by [https://github.com/Senyeah/APIEngine/archive/master.zip](downloading the zip directly).
+
+Once you’ve downloaded the project and ensuring that you have Python 3 installed, you’re ready to start using APIEngine.
+
+### Your first endpoint
+
 You need to define what endpoints your API will provide, and where those requests should go when they are received. A simple definition file may be the following:
 
 ```
@@ -27,7 +35,7 @@ export GET "/info" to "InfoRequest" in "info.php"
 
 In this example, we are `export`ing all `GET` requests to the `InfoRequest` class inside `info.php`. You then invoke APIEngine on the client side, which generates the necessary folders and files, ready to be pushed to the server.
 
-The definition file is passed as the standard input to the `apiengine create` command:
+The definition file is passed as the standard input to the `apiengine create` command, using something like:
 
 ```
 cat definition.txt | python3 apiengine.py create NewProject
@@ -48,7 +56,7 @@ The `.htaccess` file which is generated provides URL rewriting to redirect all r
 
 The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permission of this file has not changed.
 
-Upon project creation, PHP source files are automatically created which contain classes corresponding to what you defined inside your endpoint definition file.
+Upon project creation, PHP source files and corresponding directories are automatically created which contain classes corresponding to what you defined inside your endpoint definition file.
 
 ## Endpoint Definition Syntax
 
@@ -152,7 +160,7 @@ In this case:
 - A GET, PUT or DELETE request to `/users` or `/users/<some value>` will route to `User(Get|Update|Delete)Request` inside `users/main.php`
 - A GET request to `/users/image`, `/users/<some value>/image`, `/users/image/<some size>`, or `/users/<some value>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
 
-It’s important to note that each individual `export` beneath the group directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (note that GitHub has converted tabs to spaces in the examples here).
+It’s important to note that each individual `export` beneath the group directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (GitHub has converted tabs to spaces in the examples here).
 
 A base directory can optionally be specified for the group in addition to any root `base` directives. In the case where both are present, the group base directory is appended to the root base directory. An example of using this may be:
 
@@ -169,6 +177,10 @@ In this case:
 - A GET request to `/users/image` will route to `UserImageGetRequest` inside `users/images/main.php`
 - A POST request to `/users/image` will route to `UserImageCreateRequest` inside `users/images/main.php`
 
+## Request Handler Classes inside PHP
+
+
+
 ## Miscellaneous
 
 - In order to avoid ambiguity between names, you can’t place optional variables consecutively in an endpoint definition:
@@ -183,8 +195,8 @@ In this case:
 
 - Single quotes `'` are not supported—double quotes (`"`) must be used instead, as in the above examples
 
-- You cannot declare a file name of `request.php` in the root directory, as this is the file used internally to route requests.
+- You cannot declare a file name of `request.php` in the root directory, as this is the file used internally to route requests
 
-- All file paths are relative to the project’s root directory—that is `/file` is the same as just `file`.
+- All file paths are relative to the project’s root directory—that is `/file` is the same as just `file`
 
-All files are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
+All files and folders are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
