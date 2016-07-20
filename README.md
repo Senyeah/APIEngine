@@ -50,10 +50,6 @@ NewProject
 └── request.php
 ```
 
-The `.htaccess` file which is generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure that you do not change the contents of the URL rewriting section.
-
-The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
-
 Upon project creation, PHP source files and corresponding directories are automatically created which contain classes corresponding to what you defined inside your endpoint definition file.
 
 ## Endpoint Definition Syntax
@@ -177,9 +173,9 @@ In this case:
 
 ## Request Handler Classes inside PHP
 
+todo
 
-
-## Miscellaneous
+## Important Notes
 
 - In order to avoid ambiguity between variable names, you can’t place optional variables consecutively in an endpoint definition:
 
@@ -196,5 +192,10 @@ In this case:
 - You cannot declare a file name of `request.php` in the root directory, as this is the file used internally to route requests
 
 - All file paths are relative to the project’s root directory—that is `/file` is the same as just `file`
+
+- The `.htaccess` file which is automatically generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure that you do not change the contents of the URL rewriting section.
+
+- The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
+
 
 All files and folders are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
