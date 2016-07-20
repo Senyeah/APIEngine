@@ -1,0 +1,3 @@
+language: python
+python:
+script: tests/tokenizer.py
