@@ -1,5 +1,6 @@
 import re
 import itertools
+
 from enum import Enum
 
 def pairwise(iterable):
@@ -9,10 +10,13 @@ def pairwise(iterable):
 	next(b, None)
 	return zip(a, b)
 
+
 class Token(Enum):
 	""" Represents a token found in the high-level syntax, but before endpoint
 		component parsing."""
+	
 	EXPORT, GROUP, BASE, INDENT, STRING, TO, IN, GET, POST, PUT, DELETE = range(11)
+
 
 class EndpointToken(Enum):
 	""" Represents a token found in the endpoint component parsing stage.
@@ -27,6 +31,7 @@ class EndpointToken(Enum):
 	"""
 	
 	COMPONENT, SEPARATOR, VARIABLE, OPTIONAL = range(4)
+
 
 class GenericTokenizer:
 	""" Performs tokenisation in the most generic sense, given a list of (token, regex)
@@ -44,7 +49,6 @@ class GenericTokenizer:
 		self.current_token = self.next_token()
 	
 	def skip_whitespace(self):
-		
 		""" Removes all whitespace from the current position in the string forward.
 			Whitespace is defined as being either a space, newline, or carriage return.
 		"""
@@ -64,7 +68,6 @@ class GenericTokenizer:
 				break
 	
 	def next_token(self):
-		
 		""" Attempts to match a token from the current position in the string forward.
 			Longer matches are preferred, essentially to mimic Flex behaviour.
 			
@@ -89,6 +92,7 @@ class GenericTokenizer:
 		self.current_char_index += len(matched_value)
 				
 		return token, matched_value
+
 
 class BaseTokenizer(GenericTokenizer):
 	""" This is an implementation of a tokeniser for the high-level syntactic structure
@@ -117,6 +121,7 @@ class BaseTokenizer(GenericTokenizer):
 			current_token, match = self.next_token()
 		
 		return tokens
+
 
 class EndpointTokenizer(GenericTokenizer):
 	""" This is an implementation of a tokeniser for endpoint component strings.
@@ -154,6 +159,7 @@ class EndpointTokenizer(GenericTokenizer):
 		
 		return tokens
 
+		
 class Tokenizer:
 	""" Takes an input string containing an endpoint definition file and returns the
 		tokens which it comprise. An exception is thrown if the input string is invalid.
