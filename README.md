@@ -1,6 +1,6 @@
 # APIEngine
 
-Status: ![Build Status](https://travis-ci.org/Senyeah/APIEngine.svg?branch=master)
+![Build Status](https://travis-ci.org/Senyeah/APIEngine.svg?branch=master)
 
 APIEngine allows you to easily create RESTful APIs using Apache and PHP with a simple endpoint definition language. It automatically routes requests to endpoints to classes defined inside your project.
 
@@ -19,7 +19,7 @@ APIEngine is licensed under the GNU General Public License, version 3.
 
 ## Getting Started
 
-In order to begin, you need to define what endpoints your API will provide and where those requests should go when they are received. A simple definition file may be the following:
+In order to begin, you need to define what endpoints your API will provide, and where those requests should go when they are received. A simple definition file may be the following:
 
 ```
 export GET "/info" to "InfoRequest" in "info.php"
@@ -46,6 +46,6 @@ Untitled
 
 The `.htaccess` file which is generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure you do not change the contents of the URL rewriting section.
 
-The endpoint definition file passed in as the standard input is directed to the `.definition` file, and has permissions `r--------` (0400) in order to ensure that it can only be modified by authorised parties. When pushing your API to a server, always ensure the permission of this file has not changed.
+The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. This file has permissions `r--------` (0400) in order to ensure that it can only be modified by authorised parties. When pushing your API to a server, always ensure the permission of this file has not changed.
 
-The `endpoints` directory contains the main “body” of your API. Upon creation, files are automatically created which contain PHP classes corresponding to what you defined inside your endpoint definition file.
+The `endpoints` directory contains the main “body” of your API. Upon project creation, files are automatically created which contain PHP classes corresponding to what you defined inside your endpoint definition file.
