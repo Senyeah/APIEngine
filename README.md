@@ -107,7 +107,7 @@ The `base` keyword allows you to set the base directory to where all files are r
 base "<directory>"
 ```
 
-In the following example, the file `info.php` used in the `export` directive will be relative to the `code` directory (that is, located inside the `code` directory):
+In the following example, the file `info.php` used in the `export` directive will be relative to the `code` directory (that is, `info.php` is located inside the `code` directory):
 
 ```
 base "code"
@@ -128,15 +128,14 @@ In this case, a GET request to `/` will route to `UserRequest` inside `users/fil
 
 ### `group`
 
-The `group` keywords allows similar endpoints to be grouped together in order to increase readability. A `group` directive has the following format:
+The `group` keyword allows similar endpoints to be grouped together in order to increase readability. A `group` directive has the following format:
 
 ```
 group "<common-endpoint>" (base "<directory>")?
-	export…
-	export…
+(	<export-directive>)+
 ```
 
-Where `<common-endpoint>` is an endpoint shared by each endpoint in the group.
+Where `<common-endpoint>` is an endpoint shared by each endpoint in the group, and `<export-directive>` is an export directive where the URL is relative to `<common-endpoint>`.
 
 An example of using `group` may be something like:
 
