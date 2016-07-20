@@ -44,7 +44,7 @@ NewProject
 └── request.php
 ```
 
-The `.htaccess` file which is generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure you do not change the contents of the URL rewriting section.
+The `.htaccess` file which is generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure that you do not change the contents of the URL rewriting section.
 
 The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permission of this file has not changed.
 
@@ -56,7 +56,7 @@ The syntax to create endpoints was designed to be as simple and readable as poss
 
 ### `export`
 
-As its name suggests, `export` exports a request to a specific class inside a specific PHP source file. Its syntax is as follows:
+As its name suggests, the `export` directive “exports” a request to a specific class inside a specific PHP source file. Its syntax takes the following form:
 
 ```
 export <http-method> "<endpoint>" to "<class-name>" in "<file-name>"
@@ -64,7 +64,7 @@ export <http-method> "<endpoint>" to "<class-name>" in "<file-name>"
 
 Where `<http-method>` is one of `GET`, `POST`, `PUT` or `DELETE`, and `<class-name>` is the name of the PHP class located inside `<file-name>`. 
 
-`<endpoint>` is a URL to an API endpoint which is constructed of multiple _components_, each separated by forward slashes `/`. Components can either be fixed strings (like `info`), variables, or optionals.
+`<endpoint>` is a URL to an API endpoint which is constructed of multiple _components_, each separated by forward slashes `/` (leading and trailing slashes are optional). Components can either be fixed strings (like `info`), variables, or optionals.
 
 #### Variables
 
@@ -97,7 +97,7 @@ This means that a browser would be able to send the following requests, both rou
 /users/image
 ```
 
-In the first case, `id` would have a value of `1234`. In the second case however, it would have a value of `null`.
+In the first case, `id` would have a value of `1234`. In the second case however, `id` would have a value of `null`.
 
 ### `base`
 
@@ -150,9 +150,9 @@ group "/users/[id]?" base "users"
 In this case:
 
 - A GET, PUT or DELETE request to `/users` or `/users/<some value>` will route to `User(Get|Update|Delete)Request` inside `users/main.php`
-- A GET request to `/users/image`, `/users/<some value>/image`, `/users/image/<some size>` or `/users/<some value>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
+- A GET request to `/users/image`, `/users/<some value>/image`, `/users/image/<some size>`, or `/users/<some value>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
 
-It’s important to note that each individual `export` beneath the group directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces**.
+It’s important to note that each individual `export` beneath the group directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (note that GitHub has converted tabs to spaces in the examples here).
 
 A base directory can optionally be specified for the group in addition to any root `base` directives. In the case where both are present, the group base directory is appended to the root base directory. An example of using this may be:
 
@@ -181,7 +181,10 @@ In this case:
   
 - Keywords (`export`, `base`, `GET`…) are case-sensitive
 
-- You cannot declare a file name of `request.php` in the root directory, as this is the file used to route requests.
+- Single quotes `'` are not supported—double quotes (`"`) must be used instead, as in the above examples
 
+- You cannot declare a file name of `request.php` in the root directory, as this is the file used internally to route requests.
+
+- All file paths are relative to the project’s root directory—that is `/file` is the same as just `file`.
 
 All files are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
