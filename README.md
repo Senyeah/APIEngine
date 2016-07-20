@@ -19,8 +19,6 @@ APIEngine is licensed under the GNU General Public License, version 3.
 
 ## Getting Started
 
-### Preliminary
-
 Firstly, you’ll want to clone this repository locally—either by running `git clone https://github.com/Senyeah/APIEngine.git`, or by [downloading the zip directly](https://github.com/Senyeah/APIEngine/archive/master.zip).
 
 Once you’ve downloaded the project and ensuring that you have Python 3 installed, you’re ready to start using APIEngine.
@@ -54,7 +52,7 @@ NewProject
 
 The `.htaccess` file which is generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure that you do not change the contents of the URL rewriting section.
 
-The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permission of this file has not changed.
+The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
 
 Upon project creation, PHP source files and corresponding directories are automatically created which contain classes corresponding to what you defined inside your endpoint definition file.
 
@@ -183,7 +181,7 @@ In this case:
 
 ## Miscellaneous
 
-- In order to avoid ambiguity between names, you can’t place optional variables consecutively in an endpoint definition:
+- In order to avoid ambiguity between variable names, you can’t place optional variables consecutively in an endpoint definition:
 
   ```
   /users/[id]?/[size]?/image
