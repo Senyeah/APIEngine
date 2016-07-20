@@ -21,7 +21,7 @@ APIEngine is licensed under the GNU General Public License, version 3.
 
 ### Preliminary
 
-Firstly, you’ll want to clone this repository locally—either by running `git clone https://github.com/Senyeah/APIEngine.git`, or by [https://github.com/Senyeah/APIEngine/archive/master.zip](downloading the zip directly).
+Firstly, you’ll want to clone this repository locally—either by running `git clone https://github.com/Senyeah/APIEngine.git`, or by [downloading the zip directly](https://github.com/Senyeah/APIEngine/archive/master.zip).
 
 Once you’ve downloaded the project and ensuring that you have Python 3 installed, you’re ready to start using APIEngine.
 
