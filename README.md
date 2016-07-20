@@ -1,10 +1,10 @@
 # APIEngine
 
-![Build Status](https://travis-ci.org/Senyeah/APIEngine.svg?branch=master)
+[![Build Status](https://travis-ci.org/Senyeah/APIEngine.svg?branch=master)](https://travis-ci.org/Senyeah/APIEngine)
 
 APIEngine allows you to easily create RESTful APIs using Apache and PHP with a simple endpoint definition language. It automatically routes requests to endpoints to classes defined inside your project.
 
-While there are a few frameworks which allow for the creation of RESTful APIs within PHP, most are bloated, cumbersome, and otherwise difficult to use. APIEngine attempts to solve all of those issues.
+While there are several frameworks which allow for the creation of RESTful APIs within PHP, most are bloated, cumbersome, and otherwise difficult to use. APIEngine attempts to solve all of those issues.
 
 APIEngine is licensed under the GNU General Public License, version 3.
 
@@ -29,12 +29,14 @@ In this example, we are `export`ing all `GET` requests to the `InfoRequest` clas
 
 The definition file is passed as the standard input to the `apiengine create` command:
 
-```cat definition.txt | python3 apiengine.py create```
+```
+cat definition.txt | python3 apiengine.py create NewProject
+```
 
-This will then create a project called `Untitled`, in the current working directory, with the following directory structure:
+This will then create a project called `NewProject`, in the current working directory, with the following directory structure:
 
 ```
-Untitled
+NewProject
 ├── .htaccess
 ├── .definition
 │
@@ -44,13 +46,13 @@ Untitled
 
 The `.htaccess` file which is generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure you do not change the contents of the URL rewriting section.
 
-The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. This file has permissions `r--------` (0400) in order to ensure that it can only be modified by authorised parties. When pushing your API to a server, always ensure the permission of this file has not changed.
+The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permission of this file has not changed.
 
 Upon project creation, PHP source files are automatically created which contain classes corresponding to what you defined inside your endpoint definition file.
 
 ## Endpoint Definition Syntax
 
-The syntax to create endpoints was designed to be as simple and readable as possible. There are three main keywords which are used to control endpoint definition:
+The syntax to create endpoints was designed to be as simple and readable as possible. There are three main keywords which are used to control endpoint definition—`export`, `group`, and `base`.
 
 ### `export`
 
@@ -60,13 +62,13 @@ As its name suggests, `export` exports a request to a specific class inside a sp
 export <http-method> "<endpoint>" to "<class-name>" in "<file-name>"
 ```
 
-Where `<http-method>` is one of `GET`, `POST`, `PUT` or `DELETE`, `<class-name>` is the name of the PHP class located inside `<file-name>`. 
+Where `<http-method>` is one of `GET`, `POST`, `PUT` or `DELETE`, and `<class-name>` is the name of the PHP class located inside `<file-name>`. 
 
-`<endpoint>` is a URL to an API endpoint which is constructed of multiple _components_, separated by forward slashes `/`. Components can either be fixed strings (like `info`), variables, or optionals.
+`<endpoint>` is a URL to an API endpoint which is constructed of multiple _components_, each separated by forward slashes `/`. Components can either be fixed strings (like `info`), variables, or optionals.
 
 #### Variables
 
-Variables allow for that part of a component to be anything whatsoever, and the value can be obtained in the script by referencing the name you provide inside the component. Variable names are enclosed in square brackets, like `[id]`. An example endpoint which uses variables may be:
+Variables allow for that component of a request URL to be anything whatsoever. The value then is obtained in the script by referencing the name you provide—variable names are enclosed in square brackets, like `[id]`. An example endpoint which uses variables may be:
 
 ```
 export GET "/users/[id]/image" to "UserImageRequest" in "users.php"
@@ -88,24 +90,99 @@ Optionals are variables which may optionally be omitted when requesting an endpo
 export GET "/users/[id]?/image" to "UserImageRequest" in "users.php"
 ```
 
-This means that a browser would be able to send the following requests, both routed to `UserImageRequest` inside `users.php`:
+This means that a browser would be able to send the following requests, both routed to the class `UserImageRequest` inside `users.php`:
 
 ```
 /users/1234/image
 /users/image
 ```
 
-In the first case—like before—`id` would have a value of `1234`. In the second case however, it would have a value of `null`.
+In the first case, `id` would have a value of `1234`. In the second case however, it would have a value of `null`.
+
+### `base`
+
+The `base` keyword allows you to set the base directory to where all files are relative to. Its syntax is fairly straightforward:
+
+```
+base "<directory>"
+```
+
+In the following example, the file `info.php` used in the `export` directive will be relative to the `code` directory (that is, located inside the `code` directory):
+
+```
+base "code"
+export GET "/info" to "InfoRequest" in "info.php"
+```
+
+It can be set more than once, in which case it affects all directives beneath it (up until the next `base` directive):
+
+```
+base "users"
+export GET "/" to "UserRequest" in "file.php"
+
+base "misc/info"
+export GET "/info" to "InfoRequest" in "file.php"
+```
+
+In this case, a GET request to `/` will route to `UserRequest` inside `users/file.php`, and a GET request to `/info` will route to `InfoRequest` inside `/misc/info/file.php`.
+
+### `group`
+
+The `group` keywords allows similar endpoints to be grouped together in order to increase readability. A `group` directive has the following format:
+
+```
+group "<common-endpoint>" (base "<directory>")?
+	export…
+	export…
+```
+
+Where `<common-endpoint>` is an endpoint shared by each endpoint in the group.
+
+An example of using `group` may be something like:
+
+```
+group "/users/[id]?" base "users"
+	export GET "/" to "UserGetRequest" in "main.php"
+	export PUT "/" to "UserUpdateRequest" in "main.php"
+	export DELETE "/" to "UserDeleteRequest" in "main.php"
+	export GET "/image/[size]?" to "UserImageGetRequest" in "image.php"
+```
+
+In this case:
+
+- A GET, PUT or DELETE request to `/users` or `/users/<some value>` will route to `User(Get|Update|Delete)Request` inside `users/main.php`
+- A GET request to `/users/image`, `/users/<some value>/image`, `/users/image/<some size>` or `/users/<some value>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
+
+It’s important to note that each individual `export` beneath the group directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces**.
+
+A base directory can optionally be specified for the group in addition to any root `base` directives. In the case where both are present, the group base directory is appended to the root base directory. An example of using this may be:
+
+```
+base "users"
+
+group "/users/image" to "images"
+	export GET "/" to "UserImageGetRequest" in "main.php"
+	export POST "/" to "UserImageCreateRequest" in "main.php"
+```
+
+In this case:
+
+- A GET request to `/users/image` will route to `UserImageGetRequest` inside `users/images/main.php`
+- A POST request to `/users/image` will route to `UserImageCreateRequest` inside `users/images/main.php`
 
 ## Miscellaneous
 
-- In order to avoid ambiguity between optional types, you can’t have two optional variables consecutively in an endpoint definition, like in the following example:  
+- In order to avoid ambiguity between names, you can’t place optional variables consecutively in an endpoint definition:
 
   ```
   /users/[id]?/[size]?/image
   ```  
 
-  This is because in the case where a request like `/users/1234/image` is sent, it’s impossible to tell whether to place `1234` inside `id` or `size`. If you attempt to do this, an exception will be thrown when your endpoint definition file is being parsed.  
+  This is because in the case where a request like `/users/1234/image` is sent, it’s impossible to tell whether to place `1234` inside `id` or `size`. If you attempt to do this, an exception will be thrown as your endpoint definition file is parsed.  
+  
+- Keywords (`export`, `base`, `GET`…) are case-sensitive
+
+- You cannot declare a file name of `request.php` in the root directory, as this is the file used to route requests.
 
 
 All files are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
