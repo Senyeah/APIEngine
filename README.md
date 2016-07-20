@@ -21,7 +21,7 @@ APIEngine is licensed under the GNU General Public License, version 3.
 
 Firstly, you’ll want to clone this repository locally—either by running `git clone https://github.com/Senyeah/APIEngine.git`, or by [downloading the zip directly](https://github.com/Senyeah/APIEngine/archive/master.zip).
 
-Once you’ve downloaded the project and ensuring that you have Python 3 installed, you’re ready to start using APIEngine.
+Once you’ve downloaded the project and ensured that you have Python 3 installed, you’re ready to start using APIEngine.
 
 ### Your first endpoint
 
@@ -74,7 +74,7 @@ Where `<http-method>` is one of `GET`, `POST`, `PUT` or `DELETE`, and `<class-na
 
 #### Variables
 
-Variables allow for that component of a request URL to be anything whatsoever. The value then is obtained in the script by referencing the name you provide—variable names are enclosed in square brackets, like `[id]`. An example endpoint which uses variables may be:
+Variables allow for a component of the request to “vary”. The value passed then is obtained in the script by referencing the name you provide—variable names are enclosed in square brackets, like `[id]`. An example endpoint which uses variables may be:
 
 ```
 export GET "/users/[id]/image" to "UserImageRequest" in "users.php"
