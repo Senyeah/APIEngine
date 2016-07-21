@@ -196,13 +196,17 @@ class Request {
 
 | Property |        Type         | Description |
 | -------- | ------------------- | ----------- |
-| `method` | `APIRequest\Method` | The request method used when the endpoint was called. Its value will be one of `APIRequest\Method::{GET, POST, PUT, DELETE}` |
+| `method` | `Method` | The request method used when the endpoint was called. Its value will be one of `Method::GET, Method::POST, Method::PUT, or Method::DELETE`. |
 | `arguments` | `array` | The arguments passed to the script, if there were any. Where arguments exist, the name of the key corresponds to the name of the variable inside the endpoint definition language. |
 | `headers` | `array` | The request headers sent to Apache. This field is assigned by calling the `apache_request_headers` function |
 
-All classes and interfaces are located inside the `APIRequest` namespace. 
+### Notes
 
-It’s the responsibility of the class itself to return appropriate responses itself, for example using calls to `header` and by invoking `echo`.
+- All classes and interfaces are located inside the `APIRequest` namespace. 
+
+- It’s the responsibility of the class itself to return appropriate responses itself, for example using calls to `header` and by invoking `echo`.
+
+- If you attempt to route an endpoint to a class which either doesn’t exist or does not implement the `Requestable` interface, an exception will result and a `500 Internal Server Error` response will be sent back to the requester.
 
 ## Important Notes
 
