@@ -196,9 +196,9 @@ class Request {
 
 | Property |        Type         | Description |
 | -------- | ------------------- | ----------- |
-| `method` | `Method` | The request method used when the endpoint was called. Its value will be one of `Method::GET, Method::POST, Method::PUT, or Method::DELETE`. |
+| `method` | `Method` | The request method used when the endpoint was called. Its value will be one of `Method::GET`, `Method::POST`,` Method::PUT`, or `Method::DELETE`. |
 | `arguments` | `array` | The arguments passed to the script, if there were any. Where arguments exist, the name of the key corresponds to the name of the variable inside the endpoint definition language. |
-| `headers` | `array` | The request headers sent to Apache. This field is assigned by calling the `apache_request_headers` function |
+| `headers` | `array` | The request headers sent to Apache. This field is assigned by calling the `apache_request_headers` function. |
 
 ### Notes
 
