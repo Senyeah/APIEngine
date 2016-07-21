@@ -176,7 +176,7 @@ In this case:
 
 ## Request Handler Classes inside PHP
 
-Each class which you define for endpoints to be routed to must implement the `APIRequest\Requestable` interface. The interface requires a single method to be implemented, and is defined as follows:
+Each class which you define for endpoints to be routed to must implement the `Requestable` interface. The interface requires a single method to be implemented, and is defined as follows:
 
 ```php
 interface Requestable {
