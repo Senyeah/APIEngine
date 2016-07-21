@@ -8,7 +8,7 @@ While there are several frameworks which allow for the creation of RESTful APIs 
 
 APIEngine is licensed under the GNU General Public License, version 3.
 
-**APIEngine is currently in beta. If you find any bugs, please [submit an issue](https://github.com/Senyeah/APIEngine/issues/new)!**
+**APIEngine is currently in beta. If you find any bugs, please [submit an issue](https://github.com/Senyeah/APIEngine/issues/new)!** All feedback is appreciated.
 
 ## Server-Side Requirements
 
@@ -158,7 +158,7 @@ base "misc/info"
 export GET "/info" to "InfoRequest" in "file.php"
 ```
 
-In this case, a GET request to `/` will route to `UserRequest` inside `users/file.php`, and a GET request to `/info` will route to `InfoRequest` inside `/misc/info/file.php`.
+In this case, a GET request to `/` will route to `UserRequest` inside `users/file.php`, and a GET request to `/info` will route to `InfoRequest` inside `misc/info/file.php`.
 
 ### `group`
 
@@ -170,6 +170,8 @@ group "<common-endpoint>" (base "<directory>")?
 ```
 
 Where `<common-endpoint>` is an endpoint shared by each endpoint in the group, and `<export-directive>` is an export directive where the URL is relative to `<common-endpoint>`.
+
+It’s important to note that each individual `export` beneath the `group` directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (GitHub has converted tabs to spaces in the examples here).
 
 An example of using `group` may be something like:
 
@@ -185,8 +187,6 @@ In this case:
 
 - A GET, PUT or DELETE request to `/users` or `/users/<some id>` will route to `User(Get|Update|Delete)Request` inside `users/main.php`
 - A GET request to `/users/image`, `/users/<some id>/image`, `/users/image/<some size>`, or `/users/<some id>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
-
-It’s important to note that each individual `export` beneath the `group` directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (GitHub has converted tabs to spaces in the examples here).
 
 A base directory can optionally be specified for the group in addition to any root `base` directives. In the case where both are present, the group base directory is appended to the root base directory. An example of using this may be:
 
