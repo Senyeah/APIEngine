@@ -4,6 +4,7 @@ import ctypes
 import argparse
 import json
 import shutil
+from pprint import pprint
 
 import Tokenizer
 import Parser
@@ -11,10 +12,12 @@ import Parser
 from Parser import EndpointComponent
 
 class CommonNames:
-	EndpointDefinitionFile = ".endpoint"
+	EndpointDefinitionFile = ".definition"
 	HypertextAccessFile = ".htaccess"
+	EngineDirectoryName = "engine"
 
-def json_from_definition_file():
+
+def parse_definition_file():
 	
 	# Read the endpoint definition file from stdin
 	
@@ -32,7 +35,10 @@ def json_from_definition_file():
 	
 	# Return a JSON-encoded object
 	
-	return json.dumps(out_tree)
+	json_object = json.dumps(out_tree, default=lambda x: x.dict_value())
+	
+	return (json_object, parser.all_defined_classes())
+
 
 def has_edit_permission():
 	"""Returns True if the user is root/the Windows equivalent"""
@@ -45,21 +51,91 @@ def has_edit_permission():
 		return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 
-def create_project(project_directory, endpoint_definition_json):
+def create_project(project_directory, endpoint_definition_json, defined_classes):
 	
+	script_run_location = os.path.dirname(os.path.realpath(__file__))
+	script_templates_location = os.path.join(script_run_location, "templates")
+	
+	# Create the project's main directory
 	os.mkdir(project_directory)
 	
+	# Create the project's `engine' directory
+	engine_directory = os.path.join(project_directory, CommonNames.EngineDirectoryName)
+	os.mkdir(engine_directory)
+	
+	# Write the endpoint definition JSON
 	endpoint_definition_file = os.path.join(project_directory, CommonNames.EndpointDefinitionFile)
 	
 	with open(endpoint_definition_file, "w") as file:
 		file.write(endpoint_definition_json)
-		#os.chmod(file, 0o400)
 	
+	# Important for security, read only
+	os.chmod(endpoint_definition_file, 0o444)
+	
+	# Copy the htaccess file
+	
+	template_htaccess_location = os.path.join(script_templates_location, "htaccess")
 	htaccess_file = os.path.join(project_directory, CommonNames.HypertextAccessFile)
 	
-	with open(htaccess_file, "w") as file:
-		file.write("")
-		#os.chmod(file, 0o600)
+	shutil.copyfile(template_htaccess_location, htaccess_file)
+	
+	# Copy the request handler and runtime files
+	
+	request_template_path = os.path.join(script_templates_location, "request.php")
+	request_project_path = os.path.join(engine_directory, "request.php")
+	
+	runtime_template_path = os.path.join(script_templates_location, "runtime.php")
+	runtime_project_path = os.path.join(engine_directory, "runtime.php")
+	
+	# Copy the request file
+	shutil.copyfile(request_template_path, request_project_path)
+
+	# ..and the runtime file
+	shutil.copyfile(runtime_template_path, runtime_project_path)
+	
+	# Finally generate the class files
+	
+	class_definition_path = os.path.join(script_templates_location, "class-definition.php")
+	
+	with open(class_definition_path) as class_definition_file:
+		class_definition_template = class_definition_file.read()
+	
+	single_class_template_path = os.path.join(script_templates_location, "class.php")
+	
+	with open(single_class_template_path) as class_template_file:
+		single_class_template = class_template_file.read()	
+	
+	# We will create the following files, each with one or more classes inside
+	
+	files_to_create = {file_name: [] for _, file_name in defined_classes}
+	
+	# Create all of the defined directories if necessary
+	
+	for path in files_to_create.keys():
+		full_path = os.path.join(project_directory, path.lstrip('/'))
+		os.makedirs(os.path.dirname(full_path), exist_ok=True)
+	
+	# Now construct the individual PHP classes themselves
+	
+	for class_name, file_name in defined_classes:
+		files_to_create[file_name].append(single_class_template.replace("[name]", class_name))
+	
+	# Finally we make the class files, comprised of one or more classes from above
+	
+	for file_name, classes in files_to_create.items():
+	
+		classes_string = "\n".join(classes)		
+		class_file_path = os.path.join(project_directory, file_name.lstrip('/'))
+		
+		entire_class = class_definition_template.replace("[classes]", classes_string)
+		
+		# We need the path to the runtime file, so the class has access to the APIRequest namespace
+		
+		relative_runtime_path = os.path.relpath(runtime_project_path, os.path.dirname(class_file_path))
+		entire_class = entire_class.replace("[include-directory-location]", relative_runtime_path)
+		
+		with open(class_file_path, "w") as file:
+			file.write(entire_class)
 
 
 def update_project(project_directory, endpoint_definition_json):
@@ -118,9 +194,9 @@ if arguments.mode == "remove":
 	shutil.rmtree(project_directory)
 else:
 	# We need to parse their endpoint definition file
-	definition_file = json_from_definition_file()
+	definition_file, defined_classes = parse_definition_file()
 	
 	if arguments.mode == "create":
-		create_project(project_directory, definition_file)
+		create_project(project_directory, definition_file, defined_classes)
 	else:
 		update_project(project_directory, definition_file)
