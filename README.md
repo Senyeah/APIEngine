@@ -64,7 +64,7 @@ Inside the `info.php` file, you will note that the `InfoRequest` class has been 
 In this case, we simply want to return information about our PHP configuration, so only a call to `phpinfo()` is necessary:
 
 ```php
-require "engine/runtime.php"
+require_once "engine/runtime.php"
 
 class InfoRequest implements APIEngine\Requestable {
 	public function execute($request) {
