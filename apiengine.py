@@ -37,21 +37,28 @@ def parse_definition_file():
 	
 	json_object = json.dumps(out_tree, default=lambda x: x.dict_value())
 	
-	return (json_object, parser.all_defined_classes())
+	return json_object, parser.all_defined_classes()
 
 
 def has_edit_permission():
 	"""Returns True if the user is root/the Windows equivalent"""
 	
-	import ctypes
-
 	try:
 		return os.getuid() == 0
 	except AttributeError:
+		import ctypes
 		return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 
 def create_project(project_directory, endpoint_definition_json, defined_classes):
+	""" Creates a project, located at project_directory, with endpoint definition file
+	    endpoint_definition_json. Classes and their respective files which are defined
+	    are passes in the defined_classes argument, in the form (class_name, file_name).
+	    
+	    Files are copied from the /templates directory. The directories and files inside
+	    the definition file are automatically recreated inside the project directory.
+	"""
+	
 	
 	script_run_location = os.path.dirname(os.path.realpath(__file__))
 	script_templates_location = os.path.join(script_run_location, "templates")
@@ -133,6 +140,8 @@ def create_project(project_directory, endpoint_definition_json, defined_classes)
 		
 		relative_runtime_path = os.path.relpath(runtime_project_path, os.path.dirname(class_file_path))
 		entire_class = entire_class.replace("[include-directory-location]", relative_runtime_path)
+		
+		# Now finally write it
 		
 		with open(class_file_path, "w") as file:
 			file.write(entire_class)
