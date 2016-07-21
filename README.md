@@ -1,4 +1,4 @@
-# APIEngine
+# APIEngine (Beta)
 
 [![Build Status](https://travis-ci.org/Senyeah/APIEngine.svg?branch=master)](https://travis-ci.org/Senyeah/APIEngine)
 
@@ -7,6 +7,8 @@ APIEngine allows you to easily create RESTful APIs using Apache and PHP with a s
 While there are several frameworks which allow for the creation of RESTful APIs within PHP, most are bloated, cumbersome, and otherwise difficult to use. APIEngine attempts to solve all of those issues.
 
 APIEngine is licensed under the GNU General Public License, version 3.
+
+**APIEngine is currently in beta. If you find any bugs, please file a pull request!**
 
 ## Server-Side Requirements
 
@@ -191,7 +193,7 @@ A base directory can optionally be specified for the group in addition to any ro
 ```
 base "users"
 
-group "/users/image" to "images"
+group "/users/image" base "images"
 	export GET "/" to "UserImageGetRequest" in "main.php"
 	export POST "/" to "UserImageCreateRequest" in "main.php"
 ```
