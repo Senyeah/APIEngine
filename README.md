@@ -25,13 +25,15 @@ Once you’ve downloaded the project and ensured that you have Python 3 installe
 
 ### Your first endpoint
 
+#### Defining the endpoints
+
 You need to define what endpoints your API will provide, and where those requests should go when they are received. A simple definition file may be the following:
 
 ```
 export GET "/info" to "InfoRequest" in "info.php"
 ```
 
-In this example, we are `export`ing all `GET` requests to the `InfoRequest` class inside `info.php`. You then invoke APIEngine on the client side, which generates the necessary folders and files, ready to be pushed to the server.
+In this example, we are `export`ing all `GET` requests your server receives to `/info` to the `InfoRequest` class inside `info.php`. You then invoke APIEngine on the client side, which generates the necessary folders and files, ready to be pushed to the server.
 
 The definition file is passed as the standard input to the `apiengine create` command, using something like:
 
@@ -54,6 +56,31 @@ NewProject
 ```
 
 Upon project creation, PHP source files and corresponding directories are automatically created which contain classes corresponding to what you defined inside your endpoint definition file.
+
+#### Implementing the handler
+
+Inside the `info.php` file, you will note that has already a class `InfoRequest` generated. Inside the `execute` method of this class, you perform processing specific to that request and send a response.
+
+In this case, we simply want to return information about our PHP configuration, so only a call to `phpinfo()` is necessary:
+
+```php
+require "engine/runtime.php"
+
+class InfoRequest implements APIEngine\Requestable {
+	public function execute($request) {
+		phpinfo(); //Our code inserted here
+	}
+}
+```
+
+#### Testing our endpoint
+
+Once you have saved the code, direct Apache to have its root to the `NewProject` directory, before restarting it if necessary.
+
+Then on a browser, visit `http://<your domain>/info` with your web browser (where `<your domain>` is the domain of your web browser—`localhost` if you’re running it locally).
+
+Seeing the PHP information page indicates successful implementation of your endpoint.
+
 
 ## Endpoint Definition Syntax
 
@@ -154,8 +181,8 @@ group "/users/[id]?" base "users"
 
 In this case:
 
-- A GET, PUT or DELETE request to `/users` or `/users/<some value>` will route to `User(Get|Update|Delete)Request` inside `users/main.php`
-- A GET request to `/users/image`, `/users/<some value>/image`, `/users/image/<some size>`, or `/users/<some value>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
+- A GET, PUT or DELETE request to `/users` or `/users/<some id>` will route to `User(Get|Update|Delete)Request` inside `users/main.php`
+- A GET request to `/users/image`, `/users/<some id>/image`, `/users/image/<some size>`, or `/users/<some id>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
 
 It’s important to note that each individual `export` beneath the group directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (GitHub has converted tabs to spaces in the examples here).
 
@@ -196,7 +223,7 @@ class Request {
 
 | Property |        Type         | Description |
 | -------- | ------------------- | ----------- |
-| `method` | `Method` | The request method used when the endpoint was called. Its value will be one of `Method::GET`, `Method::POST`,` Method::PUT`, or `Method::DELETE`. |
+| `method` | `Method` | The request method used when the endpoint was called. Its value will be one of `Method::GET`, `Method::POST`, `Method::PUT`, or `Method::DELETE`. |
 | `arguments` | `array` | The arguments passed to the script, if there were any. Where arguments exist, the name of the key corresponds to the name of the variable inside the endpoint definition language. |
 | `headers` | `array` | The request headers sent to Apache. This field is assigned by calling the `apache_request_headers` function. |
 
