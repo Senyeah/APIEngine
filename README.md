@@ -46,8 +46,11 @@ NewProject
 ├── .htaccess
 ├── .definition
 │
-├── info.php
-└── request.php
+├── engine
+│   ├── request.php
+│	└──	runtime.php
+│
+└── info.php
 ```
 
 Upon project creation, PHP source files and corresponding directories are automatically created which contain classes corresponding to what you defined inside your endpoint definition file.
@@ -173,7 +176,33 @@ In this case:
 
 ## Request Handler Classes inside PHP
 
-todo
+Each class which you define for endpoints to be routed to must implement the `APIRequest\Requestable` interface. The interface requires a single method to be implemented, and is defined as follows:
+
+```php
+interface Requestable {
+	public function execute($request);	
+}
+```
+
+This method passes a `Request` object as its argument to the call. `Request` is defined as the following class:
+
+```php
+class Request {
+	public $method;
+	public $arguments;
+	public $headers;
+}
+```
+
+| Property |        Type         | Description |
+| -------- | ------------------- | ----------- |
+| `method` | `APIRequest\Method` | The request method used when the endpoint was called. Its value will be one of `APIRequest\Method::{GET, POST, PUT, DELETE}` |
+| `arguments` | `array` | The arguments passed to the script, if there were any. Where arguments exist, the name of the key corresponds to the name of the variable inside the endpoint definition language. |
+| `headers` | `array` | The request headers sent to Apache. This field is assigned by calling the `apache_request_headers` function |
+
+All classes and interfaces are located inside the `APIRequest` namespace. 
+
+It’s the responsibility of the class itself to return appropriate responses itself, for example using calls to `header` and by invoking `echo`.
 
 ## Important Notes
 
@@ -189,7 +218,7 @@ todo
 
 - Single quotes `'` are not supported—double quotes (`"`) must be used instead, as in the above examples
 
-- You cannot declare a file name of `request.php` in the root directory, as this is the file used internally to route requests
+- You cannot have endpoints pointing to `engine/runtime.php` or `engine/request.php`, as these files are used at runtime by APIEngine.
 
 - All file paths are relative to the project’s root directory—that is `/file` is the same as just `file`
 
@@ -197,5 +226,4 @@ todo
 
 - The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
 
-
-All files and folders are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
+- All files and folders are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
