@@ -59,7 +59,7 @@ Upon project creation, PHP source files and corresponding directories are automa
 
 #### Implementing the handler
 
-Inside the `info.php` file, you will note that has already a class `InfoRequest` generated. Inside the `execute` method of this class, you perform processing specific to that request and send a response.
+Inside the `info.php` file, you will note that the `InfoRequest` class has been automatically generated. Inside the `execute` method of this class, you perform processing specific to that request and send a response.
 
 In this case, we simply want to return information about our PHP configuration, so only a call to `phpinfo()` is necessary:
 
@@ -68,7 +68,7 @@ require "engine/runtime.php"
 
 class InfoRequest implements APIEngine\Requestable {
 	public function execute($request) {
-		phpinfo(); //Our code inserted here
+		phpinfo(); //Our code is inserted here
 	}
 }
 ```
@@ -184,7 +184,7 @@ In this case:
 - A GET, PUT or DELETE request to `/users` or `/users/<some id>` will route to `User(Get|Update|Delete)Request` inside `users/main.php`
 - A GET request to `/users/image`, `/users/<some id>/image`, `/users/image/<some size>`, or `/users/<some id>/image/<some size>` will route to `UserImageGetRequest` inside `users/image.php`.
 
-It’s important to note that each individual `export` beneath the group directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (GitHub has converted tabs to spaces in the examples here).
+It’s important to note that each individual `export` beneath the `group` directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (GitHub has converted tabs to spaces in the examples here).
 
 A base directory can optionally be specified for the group in addition to any root `base` directives. In the case where both are present, the group base directory is appended to the root base directory. An example of using this may be:
 
