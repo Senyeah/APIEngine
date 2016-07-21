@@ -8,7 +8,7 @@ While there are several frameworks which allow for the creation of RESTful APIs 
 
 APIEngine is licensed under the GNU General Public License, version 3.
 
-**APIEngine is currently in beta. If you find any bugs, please file a pull request!**
+**APIEngine is currently in beta. If you find any bugs, please submit an issue!**
 
 ## Server-Side Requirements
 
