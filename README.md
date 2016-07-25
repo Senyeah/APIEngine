@@ -66,7 +66,7 @@ Inside the `info.php` file, you will note that the `InfoRequest` class has been 
 In this case, we simply want to return information about our PHP configuration, so only a call to `phpinfo()` is necessary:
 
 ```php
-require_once "engine/runtime.php"
+require_once "engine/runtime.php";
 
 class InfoRequest implements APIEngine\Requestable {
 	public function execute($request) {
@@ -102,7 +102,7 @@ Where `<http-method>` is one of `GET`, `POST`, `PUT` or `DELETE`, and `<class-na
 
 #### Variables
 
-Variables allow for a component of the request to “vary”. The value passed then is obtained in the script by referencing the name you provide—variable names are enclosed in square brackets, like `[id]`. An example endpoint which uses variables may be:
+Variables allow for a component of the request to “vary”. The value passed then is obtained in the script by referencing the name you provide; variable names are enclosed in square brackets, like `[id]`. An example endpoint which uses variables may be:
 
 ```
 export GET "/users/[id]/image" to "UserImageRequest" in "users.php"
@@ -166,12 +166,10 @@ The `group` keyword allows similar endpoints to be grouped together in order to 
 
 ```
 group "<common-endpoint>" (base "<directory>")?
-(	<export-directive>)+
+	(<export-directive>)+
 ```
 
 Where `<common-endpoint>` is an endpoint shared by each endpoint in the group, and `<export-directive>` is an export directive where the URL is relative to `<common-endpoint>`.
-
-It’s important to note that each individual `export` beneath the `group` directive **must be indented by exactly one tab character** (`\t`) and **not by using spaces** (GitHub has converted tabs to spaces in the examples here).
 
 An example of using `group` may be something like:
 
@@ -225,7 +223,7 @@ class Request {
 
 | Property |        Type         | Description |
 | -------- | ------------------- | ----------- |
-| `method` | `Method` | The request method used when the endpoint was called. Its value will be one of `Method::GET`, `Method::POST`, `Method::PUT`, or `Method::DELETE`. |
+| `method` | `string` | The request method used when the endpoint was called. Its value will be one of `Method::GET`, `Method::POST`, `Method::PUT`, or `Method::DELETE`. |
 | `arguments` | `array` | The arguments passed to the script, if there were any. Where arguments exist, the name of the key corresponds to the name of the variable inside the endpoint definition language. |
 | `headers` | `array` | The request headers sent to Apache. This field is assigned by calling the `apache_request_headers` function. |
 
@@ -255,8 +253,8 @@ class Request {
 
 - All file paths are relative to the project’s root directory—that is `/file` is the same as just `file`
 
-- The `.htaccess` file which is automatically generated provides URL rewriting to redirect all requests to `request.php`, located in the project’s root directory. If you have any custom directives to place inside the `.htaccess` file, ensure that you do not change the contents of the URL rewriting section.
+- The `.htaccess` file which is automatically generated provides URL rewriting to redirect all requests to `engine/request.php`. If you have any custom directives to place inside the `.htaccess` file, ensure that you do not change the contents of the URL rewriting section.
 
-- The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--------` (0400). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
+- The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--r-----` (0440). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
 
 - All files and folders are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
