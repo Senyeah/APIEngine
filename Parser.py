@@ -176,18 +176,19 @@ class Parser:
 			(	<export-directive>)+
 		"""
 		
+		print("yes we're a group")
+		
 		# Remove the 'group' keyword
 		self.scanner.consume(Token.GROUP)
 		
 		# Now expect a series of components
 		group_base_components = self.process_components()
-		
+
 		# Is there a base directory for this group?
 		group_base = self.process_base(True) if self.scanner.lookahead() == Token.BASE else None
-		
+				
 		# Now expect one or more export statements
-		while self.scanner.lookahead() == Token.INDENT:
-			self.scanner.consume(Token.INDENT)
+		while self.scanner.lookahead() == Token.EXPORT:
 			self.process_export(group_base_components, group_base)
 	
 	
@@ -203,7 +204,7 @@ class Parser:
 		self.scanner.consume(Token.BASE)
 		_, base_value = self.scanner.consume(Token.STRING)
 		
-		base_value = '/' + base_value.strip("/")
+		base_value = '/' + base_value.strip('/')
 		
 		if should_return:
 			return base_value
@@ -275,6 +276,8 @@ class Parser:
 			parameters are optional).
 		"""
 		
+		print("path prefix", path_prefix)
+		
 		http_method_map = {Token.GET: Methods.GET,
 						   Token.PUT: Methods.PUT,
 						   Token.POST: Methods.POST,
@@ -309,13 +312,15 @@ class Parser:
 		# Add the base directory and path prefix if they exist
 		# base_dir + path_prefix + file_name
 		
-		prepend = (self.base_dir or "")
+		prepend = self.base_dir or ""
 		
 		if path_prefix is not None:
 			prepend += '/' + path_prefix.strip('/')
 		
 		file_name = prepend + '/' + file_name.strip('/')
-			
+		
+		print("file name", file_name)
+		
 		# Add these endpoints to the tree, but first make sure an equivalent path doesn't already exist
 		
 		for endpoint in endpoints:
