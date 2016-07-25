@@ -75,12 +75,10 @@ class TokenizationTests(unittest.TestCase):
 	
 	
 	def test_group_no_optional(self):
-		
-		# Have to be careful of the indentation here
-		
+				
 		definition_code = """group "/users" base "/user_code"
-	export GET "/" to "UserGetRequest" in "user.php"
-	export POST "/" to "UserCreateRequest" in "user.php" """
+		                         export GET "/" to "UserGetRequest" in "user.php"
+								 export POST "/" to "UserCreateRequest" in "user.php" """
 		
 		expected_tokens = [
 			Token.GROUP,
@@ -88,7 +86,6 @@ class TokenizationTests(unittest.TestCase):
 			(EndpointToken.COMPONENT, "users"),
 			Token.BASE,
 			(Token.STRING, "/user_code"),
-			Token.INDENT,
 			Token.EXPORT,
 			Token.GET,
 			EndpointToken.SEPARATOR,
@@ -96,7 +93,6 @@ class TokenizationTests(unittest.TestCase):
 			(Token.STRING, "UserGetRequest"),
 			Token.IN,
 			(Token.STRING, "user.php"),
-			Token.INDENT,
 			Token.EXPORT,
 			Token.POST,
 			EndpointToken.SEPARATOR,
@@ -113,8 +109,6 @@ class TokenizationTests(unittest.TestCase):
 	
 	def test_group_variable(self):
 		
-		# Again be careful of the indentation
-		
 		definition_code = """group "/users/[id]" base "/user_code"
 	export GET "/" to "UserGetRequest" in "user.php" """
 	
@@ -126,7 +120,6 @@ class TokenizationTests(unittest.TestCase):
 			(EndpointToken.VARIABLE, "id"),
 			Token.BASE,
 			(Token.STRING, "/user_code"),
-			Token.INDENT,
 			Token.EXPORT,
 			Token.GET,
 			EndpointToken.SEPARATOR,
@@ -143,10 +136,10 @@ class TokenizationTests(unittest.TestCase):
 
 	def test_group_optional(self):
 		
-		# Again be careful of the indentation
 		
 		definition_code = """group "/users/[id]?" base "/user_code"
-	export GET "/" to "UserGetRequest" in "user.php" """
+								export GET "/" to "UserGetRequest" in "user.php"
+						  """
 	
 		expected_tokens = [
 			Token.GROUP,
@@ -156,7 +149,6 @@ class TokenizationTests(unittest.TestCase):
 			(EndpointToken.OPTIONAL, "id"),
 			Token.BASE,
 			(Token.STRING, "/user_code"),
-			Token.INDENT,
 			Token.EXPORT,
 			Token.GET,
 			EndpointToken.SEPARATOR,
