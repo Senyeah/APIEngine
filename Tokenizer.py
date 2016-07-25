@@ -15,7 +15,7 @@ class Token(Enum):
 	""" Represents a token found in the high-level syntax, but before endpoint
 		component parsing."""
 	
-	EXPORT, GROUP, BASE, INDENT, STRING, TO, IN, GET, POST, PUT, DELETE = range(11)
+	EXPORT, GROUP, BASE, STRING, TO, IN, GET, POST, PUT, DELETE = range(10)
 
 
 class EndpointToken(Enum):
@@ -59,7 +59,7 @@ class GenericTokenizer:
 		
 		# Whitespace is defined as being one of either a space, newline or carriage return
 		
-		while self.input_string[self.current_char_index] in [' ', '\n', '\r']:
+		while self.input_string[self.current_char_index] in [' ', '\t', '\n', '\r']:
 		
 			# Sanity checking again
 			if self.current_char_index < len(self.input_string) - 1:
@@ -178,7 +178,6 @@ class Tokenizer:
 		(Token.POST, 'POST'),
 		(Token.PUT, 'PUT'),
 		(Token.DELETE, 'DELETE'),
-		(Token.INDENT, '\t'),
 		(Token.STRING, '"[0-9a-zA-Z_/.\[\]\?\- ]+"')
 	]
 	
