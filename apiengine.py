@@ -77,7 +77,7 @@ def create_project(project_directory, endpoint_definition_json, defined_classes)
 		file.write(endpoint_definition_json)
 	
 	# Important for security, read only
-	os.chmod(endpoint_definition_file, 0o444)
+	os.chmod(endpoint_definition_file, 0o440)
 	
 	# Copy the htaccess file
 	
@@ -206,6 +206,7 @@ else:
 	definition_file, defined_classes = parse_definition_file()
 	
 	if arguments.mode == "create":
+		pprint(defined_classes)
 		create_project(project_directory, definition_file, defined_classes)
 	else:
 		update_project(project_directory, definition_file)
