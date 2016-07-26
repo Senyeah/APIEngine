@@ -40,7 +40,7 @@ In this example, we are `export`ing all `GET` requests your server receives to `
 The definition file is passed as the standard input to the `apiengine create` command, using something like:
 
 ```
-cat definition.txt | python3 apiengine.py create NewProject
+cat definition.txt | python3 apiengine create NewProject
 ```
 
 This will then create a project called `NewProject`, in the current working directory, with the following directory structure:
@@ -49,6 +49,7 @@ This will then create a project called `NewProject`, in the current working dire
 NewProject
 ├── .htaccess
 ├── .definition
+├── .definition.json
 │
 ├── engine
 │   ├── request.php
