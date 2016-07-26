@@ -12,20 +12,20 @@ import Parser
 from Parser import EndpointComponent
 
 class CommonNames:
-	EndpointDefinitionFile = ".definition"
+	EndpointDefinitionFile = ".definition.json"
+	EndpointDefinitionReadableFile = ".definition"	
 	HypertextAccessFile = ".htaccess"
 	EngineDirectoryName = "engine"
 
 
-def parse_definition_file():
+def parse_definition_file(file_handle=sys.stdin):
 	
-	# Read the endpoint definition file from stdin
-	
-	file_stream = sys.stdin
+	# Get the definition file
+	definition_file = file_handle.read()
 	
 	# Make some tokens out of it
 	
-	tokenizer = Tokenizer.Tokenizer(file_stream.read())
+	tokenizer = Tokenizer.Tokenizer(definition_file)
 	tokens = tokenizer.all_tokens()
 	
 	# Parse and create a redirect tree from the tokens
@@ -37,7 +37,7 @@ def parse_definition_file():
 	
 	json_object = json.dumps(out_tree, default=lambda x: x.dict_value())
 	
-	return json_object, parser.all_defined_classes()
+	return definition_file, json_object, parser.all_defined_classes()
 
 
 def has_edit_permission():
@@ -50,7 +50,8 @@ def has_edit_permission():
 		return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 
-def create_project(project_directory, endpoint_definition_json, defined_classes):
+def create_project(project_directory, endpoint_definition_readable, endpoint_definition_json, defined_classes):
+	
 	""" Creates a project, located at project_directory, with endpoint definition file
 	    endpoint_definition_json. Classes and their respective files which are defined
 	    are passes in the defined_classes argument, in the form (class_name, file_name).
@@ -58,7 +59,6 @@ def create_project(project_directory, endpoint_definition_json, defined_classes)
 	    Files are copied from the /templates directory. The directories and files inside
 	    the definition file are automatically recreated inside the project directory.
 	"""
-	
 	
 	script_run_location = os.path.dirname(os.path.realpath(__file__))
 	script_templates_location = os.path.join(script_run_location, "templates")
@@ -69,6 +69,12 @@ def create_project(project_directory, endpoint_definition_json, defined_classes)
 	# Create the project's `engine' directory
 	engine_directory = os.path.join(project_directory, CommonNames.EngineDirectoryName)
 	os.mkdir(engine_directory)
+	
+	# Write the human-readable endpoint definition file, used for modifications later on
+	readable_definition_file = os.path.join(project_directory, CommonNames.EndpointDefinitionReadableFile)
+	
+	with open(readable_definition_file, "w") as file:
+		file.write(endpoint_definition_readable)
 	
 	# Write the endpoint definition JSON
 	endpoint_definition_file = os.path.join(project_directory, CommonNames.EndpointDefinitionFile)
@@ -148,8 +154,12 @@ def create_project(project_directory, endpoint_definition_json, defined_classes)
 
 
 def update_project(project_directory, endpoint_definition_json):
-	pass
-
+	
+	# Write the endpoint definition JSON
+	endpoint_definition_file = os.path.join(project_directory, CommonNames.EndpointDefinitionFile)
+	
+	with open(endpoint_definition_file, "w") as file:
+		file.write(endpoint_definition_json)
 
 # Get the arguments from the command line
 
@@ -202,11 +212,15 @@ if arguments.mode in ["update", "remove"] and not has_edit_permission():
 if arguments.mode == "remove":
 	shutil.rmtree(project_directory)
 else:
+	# Get the definition file's stream
+	preexisting_file_path = os.path.join(project_directory, CommonNames.EndpointDefinitionReadableFile)
+	stream = sys.stdin if arguments.mode == "create" else open(preexisting_file_path)
+	
 	# We need to parse their endpoint definition file
-	definition_file, defined_classes = parse_definition_file()
+	original, parsed, defined_classes = parse_definition_file(stream)
 	
 	if arguments.mode == "create":
-		pprint(defined_classes)
-		create_project(project_directory, definition_file, defined_classes)
+		create_project(project_directory, original, parsed, defined_classes)
 	else:
-		update_project(project_directory, definition_file)
+		update_project(project_directory, parsed)		
+		stream.close()
