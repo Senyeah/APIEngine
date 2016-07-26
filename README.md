@@ -236,6 +236,38 @@ class Request {
 
 - If you attempt to route an endpoint to a class which either doesn’t exist or does not implement the `Requestable` interface, an exception will result and a `500 Internal Server Error` response will be sent back to the requester.
 
+## Interfacing with APIEngine
+
+### Creating a project
+
+In order to create a project, you can invoke APIEngine like so:
+
+```
+cat <definition file> | python3 apiengine create <path to your new project>
+```
+
+APIEngine will then initialise a new project located at `<path to your new project>`, relative to the current working directory. The endpoint definition file is given as the standard input.
+
+### Updating a project
+
+To update the endpoint definition file after the project has been created, you need to edit the `.definition` file in the project’s root directory. To actually reflect these changes you need to tell APIEngine to recompile the file:
+
+```
+sudo python3 apiengine update <path to your project>
+```
+
+It’s important to use `sudo` as the endpoint definition file was initially created with permissions `r--r-----`, that is, it cannot be written to without superuser permissions.
+
+### Deleting a project
+
+To delete a project, use the following command:
+
+```
+sudo python3 apiengine remove <path to your project>
+```
+
+This is essentially the same as issuing `sudo rm -r <path to your project>`, except it ensures that directory is actually a valid project prior to removal.
+
 ## Important Notes
 
 - In order to avoid ambiguity between variable names, you can’t place optional variables consecutively in an endpoint definition:
@@ -248,7 +280,7 @@ class Request {
   
 - Keywords (`export`, `base`, `GET`…) are case-sensitive
 
-- Single quotes `'` are not supported—double quotes (`"`) must be used instead, as in the above examples
+- Single quotes (`'`) are not supported—double quotes (`"`) must be used instead, as in the above examples
 
 - You cannot have endpoints pointing to `engine/runtime.php` or `engine/request.php`, as these files are used at runtime by APIEngine.
 
@@ -256,6 +288,6 @@ class Request {
 
 - The `.htaccess` file which is automatically generated provides URL rewriting to redirect all requests to `engine/request.php`. If you have any custom directives to place inside the `.htaccess` file, ensure that you do not change the contents of the URL rewriting section.
 
-- The endpoint definition file passed in as the standard input is written to the `.definition` file, located in the project’s root directory. For security, this file has permissions `r--r-----` (0440). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
+- Upon project creation, the endpoint definition file passed through `stdin` is written to the `.definition.json` file, located in the project’s root directory. For security, this file has permissions `r--r-----` (0440). When pushing your API to a server, always ensure the permissions of this file has not changed, and that it is owned by your web server’s user (typically `www-data` on Linux).
 
 - All files and folders are automatically generated with appropriate classes upon project creation, but it’s your responsibility to ensure they exist upon a project update.
