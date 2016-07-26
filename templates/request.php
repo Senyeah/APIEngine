@@ -79,7 +79,7 @@ class APIRequest {
         
         if (is_null($desired_entry)) {
 	        header("HTTP/1.1 404 Not Found");
-	        die("<h1>404 Not Found</h1><p>The requested endpoint ‘" . $_REQUEST["arguments"] . "’ does not exist</p>");
+	        die("<h1>404 Not Found</h1><p>The requested endpoint ‘/" . $_REQUEST["arguments"] . "’ does not exist</p>");
         }
 
 		//We can now construct the request object
