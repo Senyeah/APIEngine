@@ -248,6 +248,8 @@ cat <definition file> | python3 apiengine create <path to your new project>
 
 APIEngine will then initialise a new project located at `<path to your new project>`, relative to the current working directory. The endpoint definition file is given as the standard input.
 
+If `<path to your new project>` is not given, a new project named `Untitled` is created in the current working directory.
+
 ### Updating a project
 
 To update the endpoint definition file after the project has been created, you need to edit the `.definition` file in the project’s root directory. To actually reflect these changes you need to tell APIEngine to recompile the file:
@@ -256,7 +258,7 @@ To update the endpoint definition file after the project has been created, you n
 sudo python3 apiengine update <path to your project>
 ```
 
-It’s important to use `sudo` as the endpoint definition file was initially created with permissions `r--r-----`, that is, it cannot be written to without superuser permissions.
+It’s important to use `sudo` here, as the endpoint definition file was initially created with permissions `r--r-----` (that is, it cannot be written to without superuser permissions).
 
 ### Deleting a project
 
