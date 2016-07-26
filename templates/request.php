@@ -107,7 +107,7 @@ class APIRequest {
         require_once basename($desired_entry->file_name);
         		
         if (class_exists($desired_entry->class_name) == false) {
-	        internal_error("Class ‘" . $desired_entry->class_name . "’ does not exist");
+	        self::internal_error("Class ‘" . $desired_entry->class_name . "’ does not exist");
         }
         
         $instance = new $desired_entry->class_name;
@@ -115,7 +115,7 @@ class APIRequest {
         if ($instance instanceof APIEngine\Requestable) {
 	        $instance->execute($request);
         } else {
-	        internal_error("Class ‘" . $desired_entry->class_name . "’ does not implement interface Requestable");
+	        self::internal_error("Class ‘" . $desired_entry->class_name . "’ does not implement interface <code>Requestable</code>");
         }
 
 	}
@@ -128,11 +128,11 @@ class APIRequest {
 			self::internal_error("This server can only accept GET, POST, PUT and DELETE requests");
 		}
 		
-		if (!file_exists("../.definition")) {
+		if (!file_exists("../.definition.json")) {
 			self::internal_error("The endpoint definition file does not exist");
 		}
 		
-		$redirect_tree_string = file_get_contents("../.definition");
+		$redirect_tree_string = file_get_contents("../.definition.json");
 		$this->redirect_tree = json_decode($redirect_tree_string, true);
 		
 		//PUT and DELETE parameters aren't stored inside $_REQUEST for some reason, so manually merge them
