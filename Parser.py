@@ -175,9 +175,7 @@ class Parser:
 			group <endpoint> (base <base directory>)?
 			(	<export-directive>)+
 		"""
-		
-		print("yes we're a group")
-		
+				
 		# Remove the 'group' keyword
 		self.scanner.consume(Token.GROUP)
 		
@@ -276,8 +274,6 @@ class Parser:
 			parameters are optional).
 		"""
 		
-		print("path prefix", path_prefix)
-		
 		http_method_map = {Token.GET: Methods.GET,
 						   Token.PUT: Methods.PUT,
 						   Token.POST: Methods.POST,
@@ -318,8 +314,6 @@ class Parser:
 			prepend += '/' + path_prefix.strip('/')
 		
 		file_name = prepend + '/' + file_name.strip('/')
-		
-		print("file name", file_name)
 		
 		# Add these endpoints to the tree, but first make sure an equivalent path doesn't already exist
 		
